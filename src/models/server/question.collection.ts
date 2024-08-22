@@ -1,12 +1,12 @@
-import { IndexType } from "node-appwrite";
+import { IndexType, Permission } from "node-appwrite";
 
 import { db, questionCollection } from "@/models/name";
 import { databases } from "./config";
-import { Permission } from "appwrite";
 
 export default async function createQuestionCollection() {
   // create collection
   await databases.createCollection(db, questionCollection, questionCollection, [
+    // there can be n number of role from the appwrite, by default there are two - 'any' and 'user'
     Permission.read("any"),
     Permission.read("users"),
     Permission.create("users"),
@@ -21,7 +21,7 @@ export default async function createQuestionCollection() {
     databases.createStringAttribute(db, questionCollection, "title", 100, true),
     databases.createStringAttribute(db, questionCollection, "content", 10000, true), // markdown
     databases.createStringAttribute(db, questionCollection, "authorId", 50, true),
-    databases.createStringAttribute(db, questionCollection, "tags", 50, true, undefined, true),
+    databases.createStringAttribute(db, questionCollection, "tags", 50, true, undefined, true), // last true for string[]
     databases.createStringAttribute(db, questionCollection, "attachmentId", 50, false), // not required
   ]);
 
@@ -31,10 +31,10 @@ export default async function createQuestionCollection() {
 
   await Promise.all([
     databases.createIndex(
-        db, questionCollection, "title", IndexType.Fulltext, ["title"],["asc"]
+        db, questionCollection, "title", IndexType.Fulltext, ["title"], ["asc"]
     ),
     databases.createIndex(
-        db, questionCollection, "content", IndexType.Fulltext, ["content"],["asc"]
+        db, questionCollection, "content", IndexType.Fulltext, ["content"], ["asc"]
     ),
   ])
 }

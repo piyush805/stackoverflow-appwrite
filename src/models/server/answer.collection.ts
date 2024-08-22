@@ -1,19 +1,17 @@
-import { IndexType } from "node-appwrite";
-
 import { answerCollection, db } from "@/models/name";
 import { databases } from "./config";
-import { Permission } from "appwrite";
+import { Permission } from "node-appwrite";
 
 export default async function createAnswerCollection() {
   // create collection
   await databases.createCollection(db, answerCollection, answerCollection, [
+    Permission.create("users"),
     Permission.read("any"),
     Permission.read("users"),
-    Permission.create("users"),
     Permission.update("users"),
     Permission.delete("users"),
   ]);
-  console.log("Answer collection is created");
+  console.log("Answer collection created");
 
   // creating attributes and indexes
 
@@ -32,32 +30,8 @@ export default async function createAnswerCollection() {
       50,
       true
     ),
-    databases.createStringAttribute(db, answerCollection, "tags", 50, true),
-    databases.createStringAttribute(db, answerCollection,
-      "attachmentId",50,false
-    ), // not required
+    databases.createStringAttribute(db, answerCollection, "authorId", 50, true),
   ]);
 
-  console.log("Question attributes created");
-
-  // Create Indexes
-
-  await Promise.all([
-    databases.createIndex(
-      db,
-      answerCollection,
-      "title",
-      IndexType.Fulltext,
-      ["title"],
-      ["asc"]
-    ),
-    databases.createIndex(
-      db,
-      answerCollection,
-      "content",
-      IndexType.Fulltext,
-      ["content"],
-      ["asc"]
-    ),
-  ]);
+  console.log("Answer attributes created");
 }
